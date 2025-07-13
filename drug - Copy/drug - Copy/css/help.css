@@ -1,0 +1,209 @@
+/* css/help.css */
+
+.help-main-content {
+    display: flex;
+    flex-direction: column; /* Allow content to stack */
+    align-items: center;
+    padding: 30px 20px;
+    background-color: #f0f8ff; /* Very light blue background */
+    min-height: calc(100vh - 60px); /* Adjust based on header height */
+    box-sizing: border-box; /* Include padding in height */
+}
+
+.help-center-container {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 900px; /* Max width for the help content */
+    padding: 30px;
+    text-align: center;
+}
+
+.help-center-container h1 {
+    color: #2196f3; /* Blue for main heading */
+    margin-bottom: 25px;
+    font-size: 2.2em;
+    font-weight: 700;
+}
+
+/* Search Bar */
+.search-bar {
+    position: relative;
+    width: 80%;
+    max-width: 500px;
+    margin: 0 auto 40px auto;
+}
+
+#helpSearchInput {
+    width: 100%;
+    padding: 12px 40px 12px 20px; /* Space for icon */
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    font-size: 1em;
+    outline: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: border-color 0.2s ease;
+}
+
+#helpSearchInput:focus {
+    border-color: #2196f3;
+}
+
+.search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+    font-size: 1.1em;
+}
+
+/* Help Modules/Cards */
+.help-modules {
+    display: flex;
+    flex-wrap: wrap; /* Allow cards to wrap on smaller screens */
+    justify-content: space-around;
+    gap: 25px;
+    margin-bottom: 50px;
+}
+
+.help-card {
+    flex: 1 1 calc(33% - 30px); /* Approx 3 cards per row with gap */
+    min-width: 250px; /* Minimum width before wrapping */
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+    text-align: left;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-left: 5px solid; /* For colored border */
+}
+
+.help-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.help-card i {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+}
+
+.help-card h3 {
+    font-size: 1.2em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.help-card p {
+    font-size: 0.9em;
+    color: #666;
+    line-height: 1.5;
+}
+
+/* Card Colors */
+.green-card { border-left-color: #28a745; }
+.green-card i { color: #28a745; }
+
+.blue-card { border-left-color: #007bff; }
+.blue-card i { color: #007bff; }
+
+.orange-card { border-left-color: #ffc107; }
+.orange-card i { color: #ffc107; }
+
+/* FAQ Section */
+.faq-section {
+    text-align: left;
+    width: 100%;
+}
+
+.faq-section h2 {
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+    font-weight: 600;
+}
+
+.faq-item {
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden; /* To contain panel animation */
+}
+
+.accordion {
+    background-color: #f2f2f2;
+    color: #444;
+    cursor: pointer;
+    padding: 15px 20px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+}
+
+.accordion:hover {
+    background-color: #e0e0e0;
+}
+
+.accordion.active {
+    background-color: #ddd;
+    color: #007bff;
+}
+
+.accordion:after {
+    content: '\002B'; /* Plus sign icon */
+    color: #777;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+}
+
+.accordion.active:after {
+    content: "\2212"; /* Minus sign icon */
+}
+
+.panel {
+    padding: 0 18px;
+    background-color: white;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+}
+
+.panel p {
+    margin: 10px 0;
+    font-size: 0.95em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.panel ul {
+    list-style-type: disc;
+    margin-left: 20px;
+    padding-left: 0;
+    font-size: 0.95em;
+    color: #555;
+}
+.panel ul li {
+    margin-bottom: 5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .help-modules {
+        flex-direction: column;
+        align-items: center;
+    }
+    .help-card {
+        flex: 1 1 90%; /* Stack cards vertically */
+        max-width: 400px; /* Max width for single column */
+    }
+}

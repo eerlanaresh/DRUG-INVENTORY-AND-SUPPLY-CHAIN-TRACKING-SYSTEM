@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VR Training Portal</title>
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/training.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    .download-link {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 8px 14px;
+      background-color: #2c3e50;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+    .download-link:hover {
+      background-color: #1a252f;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-plus-circle dashboard-icon"></i>
+        MedEase
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+          <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
+          <li><a href="verification.html"><i class="fas fa-check-circle"></i> Verification</a></li>
+          <li><a href="sales.html"><i class="fas fa-dollar-sign"></i> Sales</a></li>
+          <li><a href="tracking.html"><i class="fas fa-map-marker-alt"></i> Tracking</a></li>
+          <li><a href="training.html" class="active"><i class="fas fa-user-friends"></i> Staff Training</a></li>
+          <li><a href="#"><i class="fas fa-robot"></i> Chat-Bot</a></li>
+          <li><a href="#"><i class="fas fa-comment-dots"></i> Feedback</a></li>
+          <li><a href="#"><i class="fas fa-question-circle"></i> Help</a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="#" class="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="training-header">
+        <h1>VR Training Portal</h1>
+      </header>
+
+      <nav class="training-tabs">
+        <button class="tab-button active" data-tab="welcome">Welcome</button>
+        <button class="tab-button" data-tab="modules">Training Modules</button>
+        <button class="tab-button" data-tab="progress">Your Progress</button>
+        <button class="tab-button" data-tab="schedule">Schedule Session</button>
+      </nav>
+
+      <section class="training-section active" id="welcome-section">
+        <h2>Welcome to VR Training</h2>
+        <p>Experience immersive learning tailored for Drug and Supply Chain Management.</p>
+      </section>
+
+      <section class="training-section" id="modules-section">
+        <h2>Available Training Modules</h2>
+        <div class="module-cards-container">
+          <div class="module-card">
+            <h3>Inventory Management Basics</h3>
+            <p>Learn to handle Inventory Management.</p>
+            <a href="materials/inventory_training.pdf" download class="download-link">📥 Download PDF</a>
+          </div>
+          <div class="module-card">
+            <h3>Supply Chain Management</h3>
+            <p>Hands-on experience for managing drug inventory, procurement, and distribution.</p>
+            <a href="materials/supply_chain_basics.pdf" download class="download-link">📥 Download PDF</a>
+          </div>
+          <div class="module-card">
+            <h3>Drug Disposal Guidelines</h3>
+            <p>Automate expiry tracking, optimize stock rotation, and ensure safe disposal.</p>
+            <a href="materials/drug_disposal_guide.pdf" download class="download-link">📥 Download PDF</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="training-section" id="progress-section">
+        <h2>Your Training Progress</h2>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="trainingProgressBar" style="width: 60%;"></div>
+          <span class="progress-text" id="progressPercentage">60%</span>
+        </div>
+        <p id="progressMessage">You've completed 3 out of 5 required modules.</p>
+      </section>
+
+      <section class="training-section" id="schedule-section">
+        <h2>Schedule a VR Training Session</h2>
+        <div class="schedule-form">
+          <div class="form-group">
+            <label for="scheduleDate">Select Date:</label>
+            <input type="date" id="scheduleDate" required>
+          </div>
+          <div class="form-group">
+            <label for="scheduleTime">Select Time:</label>
+            <input type="time" id="scheduleTime" required>
+          </div>
+          <button id="bookSessionBtn">Book Session</button>
+          <p id="scheduleMessage" class="message"></p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabButtons = document.querySelectorAll('.tab-button');
+      const sections = document.querySelectorAll('.training-section');
+
+      // Tab navigation
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          tabButtons.forEach(btn => btn.classList.remove('active'));
+          sections.forEach(sec => sec.classList.remove('active'));
+
+          button.classList.add('active');
+          document.getElementById(`${button.dataset.tab}-section`).classList.add('active');
+        });
+      });
+
+      // Set min date to today
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      document.getElementById('scheduleDate').min = `${year}-${month}-${day}`;
+
+      // Booking logic (API call)
+      document.getElementById('bookSessionBtn').addEventListener('click', async () => {
+        const date = document.getElementById('scheduleDate').value;
+        const time = document.getElementById('scheduleTime').value;
+        const msg = document.getElementById('scheduleMessage');
+
+        if (!date || !time) {
+          msg.textContent = 'Please select both date and time.';
+          msg.style.color = 'orange';
+          return;
+        }
+
+        try {
+          const res = await fetch('/api/book_training', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ date, time })
+          });
+
+          const result = await res.json();
+          msg.textContent = result.message || 'Session booked!';
+          msg.style.color = result.success ? 'green' : 'red';
+        } catch (err) {
+          msg.textContent = 'Error booking session.';
+          msg.style.color = 'red';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

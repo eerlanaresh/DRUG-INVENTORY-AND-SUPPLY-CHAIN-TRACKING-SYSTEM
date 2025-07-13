@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drug Inventory Management</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/inventory.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-plus-circle dashboard-icon"></i>
+                MedEase
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="inventory.html" class="active"><i class="fas fa-boxes"></i> Inventory</a></li>
+                    <li><a href="verification.html"><i class="fas fa-check-circle"></i> Verification</a></li>
+                    <li><a href="sales.html"><i class="fas fa-dollar-sign"></i> Sales</a></li>
+                    <li><a href="tracking.html"><i class="fas fa-map-marker-alt"></i> Tracking</a></li>
+                    <li><a href="training.html"><i class="fas fa-user-friends"></i> Staff Training</a></li>
+                    <li><a href="chatbot.html"><i class="fas fa-robot"></i> Chat-Bot</a></li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> Feedback</a></li>
+                    <li><a href="help.html"><i class="fas fa-question-circle"></i> Help</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" id="logoutButton" class="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="inventory-header">
+                <h1>Drug Inventory Management</h1>
+            </header>
+
+            <section class="inventory-section">
+                <h2>Current Inventory</h2>
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Item Name / Category">
+                    <button id="searchButton">Search</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="inventory-table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Quantity</th>
+                                <th>Category</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody">
+                            <tr><td colspan="4" style="text-align: center;">Loading inventory...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="add-item-section">
+                <h2>Add New Item</h2>
+                <form id="addItemForm" class="add-item-form">
+                    <div class="form-group">
+                        <label for="newItemName">Item Name:</label>
+                        <input type="text" id="newItemName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newItemQuantity">Quantity:</label> <input type="number" id="newItemQuantity" min="0" required> </div>
+                    <div class="form-group">
+                        <label for="newCategory">Category:</label>
+                        <input type="text" id="newCategory" required>
+                    </div>
+                    <button type="submit" class="add-item-button">Add Item</button>
+                    <p id="addMessage" class="message"></p>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inventoryTableBody = document.getElementById('inventoryTableBody');
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+            const addItemForm = document.getElementById('addItemForm'); // Get the form element
+            const newItemNameInput = document.getElementById('newItemName');
+            const newItemQuantityInput = document.getElementById('newItemQuantity'); // Corrected ID
+            const newCategoryInput = document.getElementById('newCategory');
+            const addMessage = document.getElementById('addMessage');
+
+            // Function to fetch and display inventory data
+            async function fetchInventory(searchTerm = '') {
+                inventoryTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Loading inventory...</td></tr>';
+
+                let url = '/api/inventory';
+                if (searchTerm) {
+                    url += `?search=${encodeURIComponent(searchTerm)}`;
+                }
+
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const inventoryItems = await response.json();
+
+                    inventoryTableBody.innerHTML = ''; // Clear existing rows
+
+                    if (inventoryItems.length === 0) {
+                        inventoryTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No inventory items found.</td></tr>';
+                        return;
+                    }
+
+                    inventoryItems.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.dataset.id = item.id;
+                        row.innerHTML = `
+                            <td>${item.itemName}</td>
+                            <td>${item.quantity}</td>
+                            <td>${item.category}</td>
+                            <td>
+                                <button class="delete-button" data-id="${item.id}">Delete</button>
+                            </td>
+                        `;
+                        inventoryTableBody.appendChild(row);
+                    });
+                } catch (error) {
+                    console.error("Could not fetch inventory:", error);
+                    inventoryTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: red;">Error loading inventory. Please try again.</td></tr>';
+                }
+            }
+
+            // Function to add a new item
+            async function addItem() {
+                const itemName = newItemNameInput.value.trim();
+                const quantity = parseInt(newItemQuantityInput.value);
+                const category = newCategoryInput.value.trim();
+
+                if (!itemName || isNaN(quantity) || quantity < 0 || !category) {
+                    addMessage.textContent = 'Please fill in all fields correctly.';
+                    addMessage.style.color = 'red';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/inventory', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ itemName, quantity, category })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        addMessage.textContent = `Item "${result.itemName}" added successfully!`;
+                        addMessage.style.color = 'green';
+                        addItemForm.reset(); // Clear the form fields using form.reset()
+                        fetchInventory(searchInput.value); // Refresh the table
+                    } else {
+                        addMessage.textContent = `Error adding item: ${result.error || 'Unknown error'}`;
+                        addMessage.style.color = 'red';
+                    }
+                } catch (error) {
+                    console.error('Error adding item:', error);
+                    addMessage.textContent = 'Network error or server unavailable.';
+                    addMessage.style.color = 'red';
+                }
+            }
+
+            // Function to delete an item
+            async function deleteItem(id) {
+                if (!confirm(`Are you sure you want to delete item ID ${id}?`)) {
+                    return;
+                }
+                try {
+                    const response = await fetch(`/api/inventory/${id}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        // alert('Item deleted successfully!'); // Can use addMessage for this too
+                        addMessage.textContent = 'Item deleted successfully!';
+                        addMessage.style.color = 'green';
+                        fetchInventory(searchInput.value); // Refresh list
+                    } else {
+                        const errorData = await response.json();
+                        addMessage.textContent = `Error deleting item: ${errorData.error || 'Unknown error'}`;
+                        addMessage.style.color = 'red';
+                    }
+                } catch (error) {
+                    console.error('Error deleting item:', error);
+                    addMessage.textContent = 'Network error or server unavailable during deletion.';
+                    addMessage.style.color = 'red';
+                }
+            }
+
+            // --- Event Listeners ---
+
+            // Initial fetch on page load
+            fetchInventory();
+
+            // Search button click
+            searchButton.addEventListener('click', () => {
+                fetchInventory(searchInput.value);
+            });
+
+            // Add Item form submission
+            addItemForm.addEventListener('submit', async (event) => {
+                event.preventDefault(); // Prevent default form submission
+                addItem();
+            });
+
+            // Event Delegation for Delete Buttons (attached to table body)
+            inventoryTableBody.addEventListener('click', async (event) => {
+                if (event.target.classList.contains('delete-button')) {
+                    const itemId = event.target.dataset.id;
+                    deleteItem(itemId);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

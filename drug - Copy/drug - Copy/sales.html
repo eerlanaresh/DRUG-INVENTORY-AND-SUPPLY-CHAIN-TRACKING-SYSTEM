@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales History & Demand</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/sales.css"> <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-plus-circle dashboard-icon"></i>
+                MedEase
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
+                    <li><a href="verification.html"><i class="fas fa-check-circle"></i> Verification</a></li>
+                    <li><a href="sales.html" class="active"><i class="fas fa-dollar-sign"></i> Sales</a></li>
+                    <li><a href="#"><i class="fas fa-map-marker-alt"></i> Tracking</a></li>
+                    <li><a href="#"><i class="fas fa-user-friends"></i> Staff Training</a></li>
+                    <li><a href="#"><i class="fas fa-robot"></i> Chat-Bot</a></li>
+                    <li><a href="#"><i class="fas fa-comment-dots"></i> Feedback</a></li>
+                    <li><a href="#"><i class="fas fa-question-circle"></i> Help</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" class="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="sales-header">
+                <h1>Hospital Inventory Demand Chart</h1>
+            </header>
+
+            <section class="sales-section">
+                <div class="chart-controls">
+                    <label for="itemSelect">Select Item:</label>
+                    <select id="itemSelect">
+                        <option value="All Items">All Items</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="demandChart"></canvas>
+                    <p id="chartStatus" class="message"></p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        let demandChart; // Variable to hold the Chart.js instance
+        let allDemandData = {}; // To store all fetched data
+
+        // Function to generate a random color for chart lines
+        function getRandomColor() {
+            const r = Math.floor(Math.random() * 255);
+            const g = Math.floor(Math.random() * 255);
+            const b = Math.floor(Math.random() * 255);
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
+        // Function to fetch demand data from the server
+        async function fetchDemandData() {
+            const chartStatus = document.getElementById('chartStatus');
+            chartStatus.textContent = 'Loading demand data...';
+
+            try {
+                const response = await fetch('/api/sales_demand');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                allDemandData = await response.json(); // Store all data globally
+
+                chartStatus.textContent = ''; // Clear loading message
+                populateItemSelect();
+                updateChart('All Items'); // Initially show all items
+
+            } catch (error) {
+                console.error("Could not fetch demand data:", error);
+                chartStatus.textContent = 'Error loading demand data. Please try again.';
+                chartStatus.style.color = 'red';
+            }
+        }
+
+        // Function to populate the dropdown with available items
+        function populateItemSelect() {
+            const itemSelect = document.getElementById('itemSelect');
+            itemSelect.innerHTML = '<option value="All Items">All Items</option>'; // Always include "All Items"
+
+            // Get unique item names from the fetched data
+            const itemNames = Object.keys(allDemandData).filter(key => key !== 'months'); // 'months' is not an item
+            itemNames.forEach(itemName => {
+                const option = document.createElement('option');
+                option.value = itemName;
+                option.textContent = itemName;
+                itemSelect.appendChild(option);
+            });
+        }
+
+        // Function to update/render the chart
+        function updateChart(selectedItem) {
+            const ctx = document.getElementById('demandChart').getContext('2d');
+
+            const datasets = [];
+
+            if (selectedItem === 'All Items') {
+                // Iterate over all items in allDemandData (excluding 'months')
+                for (const itemName in allDemandData) {
+                    if (itemName !== 'months') {
+                        datasets.push({
+                            label: itemName,
+                            data: allDemandData[itemName],
+                            borderColor: getRandomColor(), // Assign a random color
+                            fill: false,
+                            tension: 0.1
+                        });
+                    }
+                }
+            } else {
+                // Show data only for the selected item
+                if (allDemandData[selectedItem]) {
+                    datasets.push({
+                        label: selectedItem,
+                        data: allDemandData[selectedItem],
+                        borderColor: getRandomColor(), // Assign a random color
+                        fill: false,
+                        tension: 0.1
+                    });
+                }
+            }
+
+            if (demandChart) {
+                demandChart.destroy(); // Destroy existing chart instance if it exists
+            }
+
+            demandChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Allows chart to take up available space
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Monthly Demand (Units)',
+                            font: {
+                                size: 18
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Demand (Units)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Month'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Event listener for dropdown change
+        document.getElementById('itemSelect').addEventListener('change', function() {
+            updateChart(this.value);
+        });
+
+        // Fetch data when the page loads
+        document.addEventListener('DOMContentLoaded', fetchDemandData);
+    </script>
+</body>
+</html>

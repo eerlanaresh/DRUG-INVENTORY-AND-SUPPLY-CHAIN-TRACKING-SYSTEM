@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Tracking</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/tracking.css"> <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-plus-circle dashboard-icon"></i>
+                MedEase
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
+                    <li><a href="verification.html"><i class="fas fa-check-circle"></i> Verification</a></li>
+                    <li><a href="sales.html"><i class="fas fa-dollar-sign"></i> Sales</a></li>
+                    <li><a href="tracking.html" class="active"><i class="fas fa-map-marker-alt"></i> Tracking</a></li>
+                    <li><a href="#"><i class="fas fa-user-friends"></i> Staff Training</a></li>
+                    <li><a href="#"><i class="fas fa-robot"></i> Chat-Bot</a></li>
+                    <li><a href="#"><i class="fas fa-comment-dots"></i> Feedback</a></li>
+                    <li><a href="#"><i class="fas fa-question-circle"></i> Help</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" class="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="tracking-header">
+                <h1>Order Tracking System</h1>
+            </header>
+
+            <section class="tracking-section">
+                <h2>Track Your Order</h2>
+                <div class="track-input-area">
+                    <input type="text" id="orderIdInput" placeholder="Enter Order ID">
+                    <button id="trackOrderBtn">Track Order</button>
+                </div>
+                <p id="trackingMessage" class="message"></p>
+
+                <div class="order-status-display">
+                    <h3>Order Status: <span id="currentStatus">N/A</span></h3>
+                    <div class="tracking-progress-bar">
+                        <div class="step" id="stepPlaced">Order Placed</div>
+                        <div class="step" id="stepShipped">Shipped</div>
+                        <div class="step" id="stepOutForDelivery">Out for Delivery</div>
+                        <div class="step" id="stepDelivered">Delivered</div>
+                    </div>
+                    <div class="tracking-details">
+                        <h4>Tracking Details:</h4>
+                        <p id="detailsContent">Enter an Order ID to see tracking details.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const orderIdInput = document.getElementById('orderIdInput');
+        const trackOrderBtn = document.getElementById('trackOrderBtn');
+        const trackingMessage = document.getElementById('trackingMessage');
+        const currentStatus = document.getElementById('currentStatus');
+        const detailsContent = document.getElementById('detailsContent');
+        const steps = {
+            'placed': document.getElementById('stepPlaced'),
+            'shipped': document.getElementById('stepShipped'),
+            'out_for_delivery': document.getElementById('stepOutForDelivery'),
+            'delivered': document.getElementById('stepDelivered')
+        };
+
+        trackOrderBtn.addEventListener('click', fetchTrackingData);
+        orderIdInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                fetchTrackingData();
+            }
+        });
+
+        async function fetchTrackingData() {
+            const orderId = orderIdInput.value.trim();
+            if (!orderId) {
+                trackingMessage.textContent = 'Please enter an Order ID.';
+                trackingMessage.style.color = 'orange';
+                resetTrackingDisplay();
+                return;
+            }
+
+            trackingMessage.textContent = 'Tracking order...';
+            trackingMessage.style.color = 'black';
+            resetTrackingDisplay(); // Clear previous data
+
+            try {
+                const response = await fetch(`/api/track_order?orderId=${encodeURIComponent(orderId)}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentStatus.textContent = data.status;
+                    detailsContent.innerHTML = formatDetails(data.details);
+                    updateProgressBar(data.status_code); // Use status_code for progress bar
+                    trackingMessage.textContent = ''; // Clear tracking message on success
+                } else {
+                    trackingMessage.textContent = `Error: ${data.error || 'Could not track order.'}`;
+                    trackingMessage.style.color = 'red';
+                    currentStatus.textContent = 'N/A';
+                    detailsContent.textContent = 'Order not found or invalid Order ID.';
+                }
+            } catch (error) {
+                console.error('Error fetching tracking data:', error);
+                trackingMessage.textContent = 'Network error or server unavailable.';
+                trackingMessage.style.color = 'red';
+                currentStatus.textContent = 'N/A';
+                detailsContent.textContent = 'Could not load tracking information.';
+            }
+        }
+
+        function resetTrackingDisplay() {
+            currentStatus.textContent = 'N/A';
+            detailsContent.textContent = 'Enter an Order ID to see tracking details.';
+            // Remove 'active' class from all steps
+            Object.values(steps).forEach(step => step.classList.remove('active'));
+        }
+
+        function updateProgressBar(statusCode) {
+            // Define the order of steps
+            const statusOrder = ['placed', 'shipped', 'out_for_delivery', 'delivered'];
+
+            // Find the index of the current status
+            const currentStatusIndex = statusOrder.indexOf(statusCode);
+
+            // Add 'active' class to current and previous steps
+            statusOrder.forEach((status, index) => {
+                if (index <= currentStatusIndex) {
+                    steps[status].classList.add('active');
+                } else {
+                    steps[status].classList.remove('active');
+                }
+            });
+        }
+
+        function formatDetails(details) {
+            if (!details || details.length === 0) {
+                return 'No detailed updates available.';
+            }
+            return details.map(d => `<strong>${d.timestamp}</strong>: ${d.location} - ${d.status}`).join('<br>');
+        }
+
+        // Initialize display on page load
+        document.addEventListener('DOMContentLoaded', resetTrackingDisplay);
+    </script>
+</body>
+</html>

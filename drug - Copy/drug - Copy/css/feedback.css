@@ -1,0 +1,143 @@
+/* css/feedback.css */
+
+.feedback-main-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 60px); /* Adjust based on your header height if any */
+    background-color: #e0f2f7; /* Light blue background for feedback page */
+    padding: 20px;
+}
+
+.feedback-container {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px; /* Max width for the feedback form */
+    padding: 30px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.feedback-container h2 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1.8em;
+}
+
+/* Rating Section */
+.rating-section h3 {
+    margin-bottom: 15px;
+    color: #555;
+    font-size: 1.1em;
+}
+
+.stars {
+    direction: rtl; /* For right-to-left star display (visual trick) */
+    display: inline-block;
+    unicode-bidi: bidi-override;
+}
+
+.stars input[type="radio"] {
+    display: none; /* Hide actual radio buttons */
+}
+
+.stars label {
+    font-size: 2.5em; /* Size of the stars */
+    color: #ccc; /* Default star color (unfilled) */
+    cursor: pointer;
+    padding: 0 5px;
+    transition: color 0.2s ease-in-out;
+}
+
+/* Hover and checked state for stars */
+.stars label:hover,
+.stars label:hover ~ label,
+.stars input[type="radio"]:checked ~ label {
+    color: #ffc107; /* Gold color for filled stars */
+}
+
+.rating-labels {
+    font-size: 0.9em;
+    color: #777;
+    margin-top: 10px;
+}
+
+.rating-emojis {
+    margin-top: 15px;
+    font-size: 2em;
+    height: 40px; /* Reserve space to prevent layout shift */
+}
+
+.rating-emojis .emoji {
+    display: none; /* Hidden by default, shown by JS */
+    transition: transform 0.2s ease-in-out;
+}
+
+/* Textarea Group */
+.feedback-textarea-group {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.feedback-textarea-group label {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+#feedbackText {
+    width: 100%;
+    min-height: 120px;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1em;
+    font-family: 'Poppins', sans-serif; /* Maintain font consistency */
+    resize: vertical; /* Allow vertical resizing */
+    outline: none;
+    box-sizing: border-box; /* Include padding in width */
+    transition: border-color 0.2s ease;
+}
+
+#feedbackText:focus {
+    border-color: #007bff;
+}
+
+.char-count {
+    align-self: flex-end; /* Align to bottom right of textarea group */
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Submit Button */
+#submitFeedbackBtn {
+    background-color: #28a745; /* Green submit button */
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+#submitFeedbackBtn:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+
+#submitFeedbackBtn:active {
+    transform: translateY(0);
+}
+
+.submission-message {
+    margin-top: 15px;
+    font-weight: 500;
+}

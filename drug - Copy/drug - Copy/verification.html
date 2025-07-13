@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certification Tracking System</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/verification.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Add Inter font for consistency if not already in your CSS */
+        body {
+            font-family: 'Inter', 'Poppins', sans-serif;
+        }
+        /* Basic styling for messages */
+        .message {
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-weight: 500;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .message.warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        /* Styling for the camera feed container to ensure aspect ratio */
+        .camera-feed-container {
+            position: relative;
+            width: 100%; /* Or a specific width */
+            max-width: 300px; /* Limit width */
+            padding-top: 66.66%; /* 3:2 aspect ratio (200/300 * 100%) */
+            overflow: hidden;
+            background-color: #eee;
+            border: 2px solid #ccc;
+            border-radius: 8px; /* Rounded corners */
+        }
+        .camera-feed-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures video covers the area without distortion */
+            border-radius: 8px; /* Rounded corners */
+        }
+        /* Ensure elements are rounded */
+        input[type="text"], button {
+            border-radius: 8px; /* Apply rounded corners to inputs and buttons */
+            padding: 10px;
+        }
+        button {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        /* Basic styling for the dashboard container and main content to be responsive */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column; /* Stack on small screens */
+        }
+        @media (min-width: 768px) {
+            .dashboard-container {
+                flex-direction: row; /* Side-by-side on larger screens */
+            }
+        }
+        .sidebar {
+            width: 100%;
+            padding: 20px;
+            background-color: #f0f0f0; /* Example background */
+            /* Add responsive width on larger screens */
+            @media (min-width: 768px) {
+                width: 250px; /* Fixed width sidebar */
+                flex-shrink: 0;
+            }
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .verification-section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .code-verification-area, .qr-scan-area {
+            margin-bottom: 20px;
+        }
+        .code-verification-area input, .code-verification-area button {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        @media (min-width: 640px) {
+            .code-verification-area input {
+                width: auto;
+                flex-grow: 1;
+                margin-right: 10px;
+                margin-bottom: 0;
+            }
+            .code-verification-area {
+                display: flex;
+            }
+        }
+    </style>
+    <!-- Include jsQR library for QR code scanning -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-plus-circle dashboard-icon"></i>
+                MedEase
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
+                    <li><a href="verification.html" class="active"><i class="fas fa-check-circle"></i> Verification</a></li>
+                    <li><a href="sales.html"><i class="fas fa-dollar-sign"></i> Sales</a></li>
+                    <li><a href="tracking.html"><i class="fas fa-map-marker-alt"></i> Tracking</a></li>
+                    <li><a href="training.html"><i class="fas fa-user-friends"></i> Staff Training</a></li>
+                    <li><a href="chatbot.html"><i class="fas fa-robot"></i> Chat-Bot</a></li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> Feedback</a></li>
+                    <li><a href="help.html"><i class="fas fa-question-circle"></i> Help</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" class="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="verification-header">
+                <h1>Certification Tracking System</h1>
+            </header>
+
+            <section class="verification-section">
+                <h2>Verify Certification Code</h2>
+                <div class="code-verification-area">
+                    <input type="text" id="certificationCodeInput" placeholder="Enter code manually">
+                    <button id="verifyCodeBtn">Verify Code</button>
+                    <p id="verificationMessage" class="message"></p>
+                </div>
+
+                <div class="qr-scan-area">
+                    <h2>Camera QR Code Scan</h2>
+                    <div class="camera-feed-container">
+                        <video id="video" width="300" height="200" autoplay muted playsinline></video>
+                        <canvas id="canvas" width="300" height="200" style="display:none;"></canvas>
+                    </div>
+                    <button id="startCameraBtn">Start Camera</button>
+                    <p id="cameraStatusMessage" class="message"></p>
+                    <p id="qrCodeResult" class="message"></p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // --- Code Verification Logic ---
+        document.getElementById('verifyCodeBtn').addEventListener('click', async function() {
+            const codeInput = document.getElementById('certificationCodeInput');
+            const messageElement = document.getElementById('verificationMessage');
+            const code = codeInput.value.trim();
+
+            if (code === '') {
+                messageElement.textContent = 'Please enter a code.';
+                messageElement.className = 'message warning';
+                return;
+            }
+
+            messageElement.textContent = 'Verifying code...';
+            messageElement.className = 'message'; // Clear previous state
+
+            try {
+                const response = await fetch('/api/verify_certification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ code: code }),
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    messageElement.textContent = `Verification Successful: ${result.message}`;
+                    messageElement.className = 'message success';
+                    if (result.details) {
+                        messageElement.textContent += ` (Issue: ${result.details.issueDate}, Expiry: ${result.details.expiryDate}, Status: ${result.details.status})`;
+                    }
+                } else {
+                    messageElement.textContent = `Verification Failed: ${result.message}`;
+                    messageElement.className = 'message error';
+                }
+            } catch (error) {
+                console.error('Error during code verification API call:', error);
+                messageElement.textContent = 'An error occurred during verification. Please try again later.';
+                messageElement.className = 'message error';
+            }
+        });
+
+        // --- Camera & QR Scan Logic ---
+        const video = document.getElementById('video');
+        const startCameraBtn = document.getElementById('startCameraBtn');
+        const cameraStatusMessage = document.getElementById('cameraStatusMessage');
+        const qrCodeResult = document.getElementById('qrCodeResult');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        let stream; // To hold the camera stream
+        let animationFrameId; // To control the requestAnimationFrame loop
+
+        // Function to stop the camera stream
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+                stream = null;
+            }
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            video.pause();
+            startCameraBtn.textContent = 'Start Camera';
+            cameraStatusMessage.textContent = 'Camera stopped.';
+            cameraStatusMessage.className = 'message';
+            qrCodeResult.textContent = '';
+            qrCodeResult.className = 'message';
+            canvas.style.display = 'none'; // Hide canvas when camera is off
+        }
+
+        startCameraBtn.addEventListener('click', async () => {
+            if (stream) { // If camera is already on, turn it off
+                stopCamera();
+                return;
+            }
+
+            cameraStatusMessage.textContent = 'Requesting camera access...';
+            cameraStatusMessage.className = 'message warning';
+            qrCodeResult.textContent = '';
+            qrCodeResult.className = 'message';
+
+            try {
+                // Request access to the user's camera
+                // 'environment' prefers rear camera on mobile devices
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = stream;
+                video.play();
+                startCameraBtn.textContent = 'Stop Camera';
+                cameraStatusMessage.textContent = 'Camera active. Point at QR code.';
+                cameraStatusMessage.className = 'message success';
+                canvas.style.display = 'block'; // Show canvas when camera starts
+
+                // Start QR code scanning loop
+                animationFrameId = requestAnimationFrame(scanQrCode);
+
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                cameraStatusMessage.textContent = 'Error: Could not access camera. Please ensure permissions are granted.';
+                cameraStatusMessage.className = 'message error';
+                qrCodeResult.textContent = '';
+                stopCamera(); // Ensure camera is stopped if there's an error
+            }
+        });
+
+        // QR code scanning logic using jsQR
+        function scanQrCode() {
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                    inversionAttempts: "dontInvert", // Optimize for non-inverted QR codes
+                });
+
+                if (code) {
+                    qrCodeResult.textContent = `QR Code Scanned: ${code.data}`;
+                    qrCodeResult.className = 'message success';
+                    document.getElementById('certificationCodeInput').value = code.data; // Populate input
+                    // Automatically verify the scanned code
+                    document.getElementById('verifyCodeBtn').click();
+                    stopCamera(); // Optionally stop camera after successful scan
+                    return; // Stop the animation frame loop
+                } else {
+                    qrCodeResult.textContent = 'No QR code detected.';
+                    qrCodeResult.className = 'message warning';
+                }
+            }
+            animationFrameId = requestAnimationFrame(scanQrCode); // Keep scanning
+        }
+
+        // Logout button functionality
+        document.querySelector('.logout-button').addEventListener('click', async (e) => {
+            e.preventDefault(); // Prevent default link behavior
+            try {
+                const response = await fetch('/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                if (response.ok) {
+                    window.location.href = '/'; // Redirect to login page
+                } else {
+                    console.error('Logout failed.');
+                    alert('Logout failed. Please try again.'); // Using alert for simplicity, replace with custom modal
+                }
+            } catch (error) {
+                console.error('Error during logout:', error);
+                alert('An error occurred during logout.'); // Using alert for simplicity, replace with custom modal
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Assistant</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/chatbot.css"> <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-plus-circle dashboard-icon"></i>
+                MedEase
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
+                    <li><a href="verification.html"><i class="fas fa-check-circle"></i> Verification</a></li>
+                    <li><a href="sales.html"><i class="fas fa-dollar-sign"></i> Sales</a></li>
+                    <li><a href="tracking.html"><i class="fas fa-map-marker-alt"></i> Tracking</a></li>
+                    <li><a href="training.html"><i class="fas fa-user-friends"></i> Staff Training</a></li>
+                    <li><a href="chatbot.html" class="active"><i class="fas fa-robot"></i> Chat-Bot</a></li>
+                    <li><a href="#"><i class="fas fa-comment-dots"></i> Feedback</a></li>
+                    <li><a href="#"><i class="fas fa-question-circle"></i> Help</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" class="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content chatbot-main-content">
+            <div class="chatbot-container">
+                <header class="chatbot-header">
+                    <i class="fas fa-robot"></i> Chatbot Assistant
+                </header>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message bot-message">
+                        <p>Hello! How can I assist you today?</p>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="userMessageInput" placeholder="Type your message here...">
+                    <button id="sendMessageBtn"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const userMessageInput = document.getElementById('userMessageInput');
+        const sendMessageBtn = document.getElementById('sendMessageBtn');
+
+        sendMessageBtn.addEventListener('click', sendMessage);
+        userMessageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const userMessage = userMessageInput.value.trim();
+            if (!userMessage) return;
+
+            // Display user message
+            appendMessage(userMessage, 'user-message');
+            userMessageInput.value = ''; // Clear input
+
+            // Scroll to the bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                // Send message to server and get bot response
+                const response = await fetch('/api/chatbot', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: userMessage })
+                });
+                const data = await response.json();
+
+                // Display bot message after a short delay for realism
+                setTimeout(() => {
+                    appendMessage(data.reply, 'bot-message');
+                    chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll again
+                }, 500); // Simulate typing delay
+            } catch (error) {
+                console.error('Error sending message to chatbot:', error);
+                setTimeout(() => {
+                    appendMessage("Oops! I'm having trouble connecting right now. Please try again later.", 'bot-message');
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 500);
+            }
+        }
+
+        function appendMessage(text, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', type);
+            const paragraph = document.createElement('p');
+            paragraph.textContent = text;
+            messageDiv.appendChild(paragraph);
+            chatMessages.appendChild(messageDiv);
+        }
+    </script>
+</body>
+</html>

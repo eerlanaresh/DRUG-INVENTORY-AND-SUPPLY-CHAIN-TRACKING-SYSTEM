@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedEase Dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-plus-circle dashboard-icon"></i> MedEase
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
+                    <li><a href="verification.html"><i class="fas fa-check-circle"></i> Verification</a></li>
+                    <li><a href="sales.html"><i class="fas fa-dollar-sign"></i> Sales</a></li>
+                    <li><a href="tracking.html"><i class="fas fa-map-marker-alt"></i> Tracking</a></li>
+                    <li><a href="training.html"><i class="fas fa-user-friends"></i> Staff Training</a></li>
+                    <li><a href="chatbot.html"><i class="fas fa-robot"></i> Chat-Bot</a></li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> Feedback</a></li>
+                    <li><a href="help.html"><i class="fas fa-question-circle"></i> Help</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" id="logoutButton" class="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+            </header>
+
+            <section class="dashboard-section welcome-section">
+                <div class="welcome-box">
+                    <h1>Welcome to MedEase</h1>
+                    <div class="image-card">
+                        <img src="dashboardimage.jpg" alt="Pills in a heart-shaped container" class="main-dashboard-image">
+                    </div>
+                    <div class="text-content">
+                        <h2>Inventory Management</h2>
+                        <p>Keep track of medical supplies, equipment, and other inventory items. Maintain stock levels and avoid shortages.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const logoutButton = document.getElementById('logoutButton');
+
+            if (logoutButton) {
+                logoutButton.addEventListener('click', async (event) => {
+                    event.preventDefault(); // Prevent default link behavior
+
+                    try {
+                        // Send a request to the server to clear session/cookies
+                        const response = await fetch('/logout', {
+                            method: 'POST', // Use POST for logout for security best practices
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        if (response.ok) {
+                            // If logout successful on server, redirect to login page
+                            window.location.href = '/index.html';
+                        } else {
+                            // Handle cases where server-side logout fails
+                            console.error('Logout failed on server:', await response.text());
+                            alert('Logout failed. Please try again.');
+                        }
+                    } catch (error) {
+                        console.error('Network error during logout:', error);
+                        alert('Could not connect to the server for logout. Please check your connection.');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

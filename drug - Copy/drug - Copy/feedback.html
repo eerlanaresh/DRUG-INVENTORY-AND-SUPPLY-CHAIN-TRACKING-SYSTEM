@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feedback</title>
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      padding: 2rem;
+      background: #f0f0f0;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .feedback-container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .star-rating {
+      text-align: center;
+      direction: rtl;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .star {
+      cursor: pointer;
+      color: #ccc;
+    }
+
+    .star.selected,
+    .star:hover,
+    .star:hover ~ .star {
+      color: #f5b301;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 1rem;
+      resize: none;
+    }
+
+    button {
+      margin-top: 1rem;
+      width: 100%;
+      padding: 10px;
+      background-color: #2c3e50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1a252f;
+    }
+
+    #feedbackMessage {
+      margin-top: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="feedback-container">
+    <h1>Submit Your Feedback</h1>
+    <form id="feedbackForm">
+      <div class="star-rating">
+        <span class="star" data-value="5">&#9733;</span>
+        <span class="star" data-value="4">&#9733;</span>
+        <span class="star" data-value="3">&#9733;</span>
+        <span class="star" data-value="2">&#9733;</span>
+        <span class="star" data-value="1">&#9733;</span>
+      </div>
+      <textarea id="feedbackText" placeholder="Write your feedback here..." rows="5"></textarea>
+      <button type="submit">Submit</button>
+      <p id="feedbackMessage"></p>
+    </form>
+  </div>
+
+  <script>
+    let selectedRating = 0;
+    const stars = document.querySelectorAll('.star');
+
+    stars.forEach(star => {
+      star.addEventListener('click', () => {
+        selectedRating = parseInt(star.getAttribute('data-value'));
+        stars.forEach(s => s.classList.remove('selected'));
+        stars.forEach(s => {
+          if (parseInt(s.getAttribute('data-value')) <= selectedRating) {
+            s.classList.add('selected');
+          }
+        });
+      });
+    });
+
+    document.getElementById('feedbackForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const feedback = document.getElementById('feedbackText').value.trim();
+      const message = document.getElementById('feedbackMessage');
+
+      if (!feedback && !selectedRating) {
+        message.textContent = 'Please provide feedback or rating.';
+        message.style.color = 'orange';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/submit_feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            rating: selectedRating,
+            feedback: feedback
+          })
+        });
+
+        const result = await res.json();
+        message.textContent = result.message;
+        message.style.color = result.success ? 'green' : 'red';
+        if (result.success) {
+          document.getElementById('feedbackText').value = '';
+          stars.forEach(s => s.classList.remove('selected'));
+          selectedRating = 0;
+        }
+      } catch (err) {
+        message.textContent = 'Error submitting feedback.';
+        message.style.color = 'red';
+      }
+    });
+  </script>
+</body>
+</html>

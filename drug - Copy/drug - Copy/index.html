@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <img src="doctor.jpg" alt="Background image" class="full-screen-background">
+
+    <div class="login-container">
+        <div class="login-card">
+            <h2>Login</h2>
+            <form action="/login" method="POST">
+            <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                <div class="form-group remember-me-group">
+                    <input type="checkbox" id="remember-me" name="remember-me">
+                    <label for="remember-me">Remember me</label>
+                </div>
+                <button type="submit" class="sign-in-button">Sign in</button>
+            </form>
+            <p class="terms-privacy">
+                By creating an account you agree to our <br>
+                <a href="#">Terms & Privacy</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

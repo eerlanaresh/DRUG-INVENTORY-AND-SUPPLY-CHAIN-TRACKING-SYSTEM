@@ -1,0 +1,56 @@
+/* css/sales.css */
+
+.sales-header {
+    background-color: #007bff;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.sales-section {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.chart-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.chart-controls label {
+    font-weight: 500;
+}
+
+.chart-controls select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    min-width: 150px;
+}
+
+.chart-container {
+    position: relative; /* Needed for responsive canvas sizing */
+    height: 400px; /* Fixed height for the chart area */
+    width: 100%;
+}
+
+.chart-container canvas {
+    /* Chart.js handles its own sizing within the container */
+}
+
+.message {
+    margin-top: 10px;
+    font-weight: 500;
+    text-align: center;
+}

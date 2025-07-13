@@ -1,0 +1,231 @@
+/* General Body and Container */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f2f5; /* Light grey background for the whole page */
+    overflow-x: hidden; /* Prevent horizontal scrollbar */
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh; /* Ensure container takes full viewport height */
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 250px; /* Fixed width for the sidebar */
+    background-color: #ffffff; /* White background */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Pushes footer to the bottom */
+    padding-bottom: 20px; /* Space for the logout button */
+}
+
+.sidebar-header {
+    padding: 25px 20px;
+    font-size: 1.8em;
+    font-weight: 700;
+    color: #007bff; /* Blue color for MedEase title */
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Space between icon and text */
+}
+
+.dashboard-icon {
+    font-size: 1.2em;
+    color: #007bff;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-nav li a {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: #555;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    gap: 15px; /* Space between icon and text */
+}
+
+.sidebar-nav li a i {
+    font-size: 1.1em;
+    color: #777; /* Icon color */
+}
+
+.sidebar-nav li a:hover,
+.sidebar-nav li a.active {
+    background-color: #e6f2ff; /* Light blue on hover/active */
+    color: #007bff; /* Blue text on hover/active */
+}
+
+.sidebar-nav li a.active i {
+    color: #007bff; /* Blue icon on active */
+}
+
+
+.sidebar-footer {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.logout-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #dc3545; /* Red logout button */
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+    background-color: #c82333; /* Darker red on hover */
+}
+
+/* Main Content Area */
+.main-content {
+    flex-grow: 1; /* Takes up remaining space */
+    padding: 20px;
+    background-color: #f0f2f5; /* Light grey background */
+    overflow-y: auto; /* Enable scrolling if content overflows */
+}
+
+/* Header (Optional, but good for top bar) */
+.main-header {
+    /* If you add content to this, style it here */
+    padding-bottom: 20px; /* Space below header */
+}
+
+/* Welcome Section */
+.welcome-section {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    margin-bottom: 20px;
+}
+
+.welcome-box {
+    background-color: #007bff; /* Blue background for the box with image/text */
+    border-radius: 8px;
+    padding: 30px;
+    color: #fff;
+    text-align: center;
+}
+
+.welcome-box h1 {
+    font-size: 2.5em;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.image-card {
+    background-color: #fff; /* White background for the image container */
+    border-radius: 8px;
+    padding: 15px;
+    display: inline-block; /* To shrink to content size */
+    margin-bottom: 20px;
+    max-width: 100%; /* Ensure it doesn't overflow */
+}
+
+.main-dashboard-image {
+    max-width: 100%; /* Make image responsive */
+    height: auto;
+    border-radius: 5px; /* Slightly rounded corners for the image itself */
+}
+
+.text-content {
+    margin-top: 20px;
+}
+
+.text-content h2 {
+    font-size: 1.8em;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.text-content p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 80px; /* Collapse sidebar on smaller screens */
+    }
+
+    .sidebar-header {
+        font-size: 0; /* Hide text */
+        justify-content: center;
+        padding: 20px 0;
+    }
+
+    .dashboard-icon {
+        font-size: 2em; /* Make icon larger */
+        margin: 0;
+    }
+
+    .sidebar-nav li a {
+        justify-content: center; /* Center icons */
+        gap: 0;
+    }
+
+    .sidebar-nav li a span { /* If you add text spans to links */
+        display: none; /* Hide text */
+    }
+
+    .sidebar-nav li a i {
+        font-size: 1.5em; /* Larger icons */
+    }
+
+    .logout-button {
+        padding: 10px;
+        font-size: 0; /* Hide logout text */
+        border-radius: 50%; /* Make it circular */
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .logout-button i {
+        font-size: 1.5em;
+    }
+
+    .welcome-box h1 {
+        font-size: 2em;
+    }
+    .text-content h2 {
+        font-size: 1.5em;
+    }
+    .text-content p {
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 60px; /* Even smaller for very small screens */
+    }
+    .main-content {
+        padding: 10px;
+    }
+    .welcome-box {
+        padding: 20px;
+    }
+}

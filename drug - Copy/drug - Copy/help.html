@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Center</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/help.css"> <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-plus-circle dashboard-icon"></i>
+                MedEase
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a></li>
+                    <li><a href="verification.html"><i class="fas fa-check-circle"></i> Verification</a></li>
+                    <li><a href="sales.html"><i class="fas fa-dollar-sign"></i> Sales</a></li>
+                    <li><a href="tracking.html"><i class="fas fa-map-marker-alt"></i> Tracking</a></li>
+                    <li><a href="training.html"><i class="fas fa-user-friends"></i> Staff Training</a></li>
+                    <li><a href="chatbot.html"><i class="fas fa-robot"></i> Chat-Bot</a></li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> Feedback</a></li>
+                    <li><a href="help.html" class="active"><i class="fas fa-question-circle"></i> Help</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" class="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content help-main-content">
+            <div class="help-center-container">
+                <h1>Help Center</h1>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search help topics..." id="helpSearchInput">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+
+                <div class="help-modules">
+                    <div class="help-card green-card">
+                        <i class="fas fa-truck-moving"></i>
+                        <h3>How to Track Your Inventory</h3>
+                        <p>Learn how to use the tracking feature to monitor your inventory levels.</p>
+                    </div>
+                    <div class="help-card blue-card">
+                        <i class="fas fa-dolly"></i>
+                        <h3>Managing Supply Chain</h3>
+                        <p>Understand how to manage and streamline your supply chain for faster distribution.</p>
+                    </div>
+                    <div class="help-card orange-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Analyzing Consumption Patterns</h3>
+                        <p>Use data analytics to gain insights and make informed decisions.</p>
+                    </div>
+                </div>
+
+                <div class="faq-section">
+                    <h2>Frequently Asked Questions</h2>
+                    <div class="faq-item">
+                        <button class="accordion">What is the Inventory System?</button>
+                        <div class="panel">
+                            <p>The Inventory System in MedEase is a comprehensive tool designed to help you manage all medical supplies, equipment, and other inventory items efficiently. It allows you to track stock levels, monitor expiry dates, and ensure timely reordering to prevent shortages and waste.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">How do I update inventory?</button>
+                        <div class="panel">
+                            <p>You can update inventory by navigating to the "Inventory" section from the dashboard. Here, you can add new items, modify quantities of existing items, or remove items that are no longer in stock. Ensure you have the necessary permissions to make changes.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">How can I contact support?</button>
+                        <div class="panel">
+                            <p>For further assistance, you can contact our support team through the following methods:</p>
+                            <ul>
+                                <li>Email: support@medease.com</li>
+                                <li>Phone: +1-800-MED-EASE</li>
+                                <li>Live Chat: Available on the dashboard during business hours.</li>
+                            </ul>
+                            <p>You can also use the Chat-Bot for quick answers to common questions.</p>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Accordion / FAQ functionality
+            const accordions = document.querySelectorAll('.accordion');
+
+            accordions.forEach(accordion => {
+                accordion.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    const panel = this.nextElementSibling;
+                    if (panel.style.maxHeight) {
+                        panel.style.maxHeight = null;
+                        panel.style.padding = '0 18px'; // Remove vertical padding when closed
+                    } else {
+                        panel.style.maxHeight = panel.scrollHeight + "px";
+                        panel.style.padding = '10px 18px'; // Add vertical padding when open
+                    }
+                });
+            });
+
+            // Basic Search functionality (client-side filter)
+            const helpSearchInput = document.getElementById('helpSearchInput');
+            const faqItems = document.querySelectorAll('.faq-item');
+            const helpCards = document.querySelectorAll('.help-card');
+
+            helpSearchInput.addEventListener('keyup', function() {
+                const searchTerm = helpSearchInput.value.toLowerCase();
+
+                // Filter FAQ items
+                faqItems.forEach(item => {
+                    const question = item.querySelector('.accordion').textContent.toLowerCase();
+                    const answer = item.querySelector('.panel p').textContent.toLowerCase();
+                    if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                        item.style.display = ''; // Show item
+                    } else {
+                        item.style.display = 'none'; // Hide item
+                    }
+                });
+
+                // Filter Help Cards (modules)
+                helpCards.forEach(card => {
+                    const title = card.querySelector('h3').textContent.toLowerCase();
+                    const description = card.querySelector('p').textContent.toLowerCase();
+                    if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                        card.style.display = ''; // Show card
+                    } else {
+                        card.style.display = 'none'; // Hide card
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
